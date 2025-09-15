@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: He diseñado una SPA con cuatro pestañas principales: 'Conceptos', 'Indeterminaciones', 'Aplicaciones' y 'Práctica Interactiva'. Esta estructura segmenta el contenido por tarea del usuario (aprender, resolver, aplicar, practicar) en lugar de seguir el orden del informe. El objetivo es permitir a los estudiantes saltar directamente a la sección que necesitan, haciendo el estudio más eficiente. La navegación es manejada por JS para mostrar/ocultar secciones, creando una experiencia fluida sin recargar la página. -->
+    <!-- Visualization & Content Choices: 1. Concepto de Límite -> Objetivo: Visualizar -> Viz: Gráfico de líneas interactivo (Chart.js/Canvas) con un punto móvil -> Interacción: Un deslizador controla la posición de 'x', mostrando cómo f(x) se acerca a 'L'. Justificación: Hace tangible un concepto abstracto. 2. Indeterminaciones -> Objetivo: Organizar -> Viz: Acordeón HTML/CSS -> Interacción: Clic para expandir/colapsar cada tipo, mostrando la explicación y un ejemplo. Justificación: Presenta información densa de forma limpia y bajo demanda. 3. Práctica -> Objetivo: Reforzar Reglas -> Viz: Calculadora de límites HTML -> Interacción: El usuario selecciona grados de polinomios y el JS calcula el límite en el infinito. Justificación: Aprendizaje activo con feedback inmediato. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>Explorador Interactivo de Límites</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4;
+            color: #44403c;
+        }
+        .tab-active {
+            border-color: #0d9488;
+            color: #0d9488;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            border-color: transparent;
+            color: #57534e;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            border: 1px solid #e7e5e4;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .katex-style {
+            font-family: 'KaTeX_Main', serif;
+            font-size: 1.1rem;
+            color: #1c1917;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8">
+
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-teal-800">Límites de Funciones y Continuidad</h1>
+            <p class="mt-2 text-lg text-stone-600">Una guía interactiva para estudiantes de Bachillerato</p>
+        </header>
+
+        <nav class="flex justify-center border-b-2 border-stone-200 mb-8">
+            <button data-tab="conceptos" class="tab tab-active text-sm sm:text-base py-3 px-4 sm:px-6 border-b-2 transition-colors duration-300">Conceptos Fundamentales</button>
+            <button data-tab="indeterminaciones" class="tab tab-inactive text-sm sm:text-base py-3 px-4 sm:px-6 border-b-2 transition-colors duration-300">Indeterminaciones</button>
+            <button data-tab="aplicaciones" class="tab tab-inactive text-sm sm:text-base py-3 px-4 sm:px-6 border-b-2 transition-colors duration-300">Aplicaciones y Teoremas</button>
+            <button data-tab="practica" class="tab tab-inactive text-sm sm:text-base py-3 px-4 sm:px-6 border-b-2 transition-colors duration-300">Práctica Interactiva</button>
+        </nav>
+
+        <main>
+            <!-- SECCIÓN 1: CONCEPTOS FUNDAMENTALES -->
+            <div id="conceptos" class="content-section">
+                <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">Esta sección cubre las ideas básicas. Entender qué es un límite es el primer paso para dominar el cálculo. Utiliza el gráfico interactivo para visualizar cómo una función se acerca a su límite.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl text-teal-700 mb-4">Visualización de un Límite</h3>
+                        <p class="text-stone-600 mb-4">Observa el límite de la función <span class="katex-style">f(x) = (x² - 1) / (x - 1)</span> cuando <span class="katex-style">x</span> tiende a 1. Aunque la función no está definida en <span class="katex-style">x = 1</span>, su límite es 2. Mueve el deslizador para ver cómo el punto azul (<span class="katex-style">x, f(x)</span>) se acerca al límite (círculo vacío).</p>
+                        <div class="chart-container relative w-full max-w-xl mx-auto h-64 md:h-72">
+                            <canvas id="limitChart"></canvas>
+                        </div>
+                        <div class="mt-4">
+                            <label for="xSlider" class="block text-sm font-medium text-stone-700">Mueve el valor de x:</label>
+                            <input id="xSlider" type="range" min="0" max="2" value="0.1" step="0.01" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="text-center mt-2 font-medium text-stone-700">Valor de x: <span id="xValue">0.10</span>, Valor de f(x): <span id="yValue">1.10</span></div>
+                        </div>
+                    </div>
+                    <div class="card p-6 flex flex-col justify-center">
+                        <h3 class="font-bold text-xl text-teal-700 mb-4">Definiciones Clave</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="font-semibold text-stone-800">Límites Laterales</h4>
+                                <p class="text-stone-600">Para que el límite de una función en un punto exista, el valor al que se acerca por la izquierda (<span class="katex-style">lim x→a⁻</span>) debe ser el mismo que el valor al que se acerca por la derecha (<span class="katex-style">lim x→a⁺</span>).</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-stone-800">Continuidad</h4>
+                                <p class="text-stone-600">Una función es continua en un punto <span class="katex-style">x=a</span> si se cumplen tres condiciones: la función existe en el punto (<span class="katex-style">f(a)</span> existe), el límite existe (<span class="katex-style">lim x→a</span> existe) y ambos valores son iguales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: INDETERMINACIONES -->
+            <div id="indeterminaciones" class="content-section hidden">
+                <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">Las indeterminaciones son expresiones cuyo resultado no es inmediato. Aquí aprenderás a resolver los tipos más comunes. Haz clic en cada tipo para ver la explicación y un ejemplo resuelto.</p>
+                <div class="max-w-3xl mx-auto space-y-4" id="accordion-container">
+                    <!-- Los acordeones se generarán con JS -->
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: APLICACIONES Y TEOREMAS -->
+            <div id="aplicaciones" class="content-section hidden">
+                <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">Los límites no son solo un concepto teórico; tienen aplicaciones directas como el cálculo de asíntotas. Además, teoremas como el de Bolzano nos dan información muy valiosa sobre el comportamiento de las funciones.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl text-teal-700 mb-4">Cálculo de Asíntotas</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-stone-800">Asíntotas Verticales</h4>
+                                <p class="text-stone-600">Ocurren en un punto <span class="katex-style">x=a</span> si el límite de la función en ese punto tiende a infinito (<span class="katex-style">lim x→a f(x) = ±∞</span>). Suelen encontrarse en valores que anulan el denominador.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-stone-800">Asíntotas Horizontales</h4>
+                                <p class="text-stone-600">Existen si el límite de la función cuando <span class="katex-style">x</span> tiende a infinito es un número finito <span class="katex-style">L</span> (<span class="katex-style">lim x→±∞ f(x) = L</span>). La asíntota es la recta <span class="katex-style">y=L</span>.</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="card p-6">
+                        <h3 class="font-bold text-xl text-teal-700 mb-4">Teoremas Fundamentales</h3>
+                         <div class="space-y-4">
+                            <div>
+                                <h4 class="font-semibold text-stone-800">Teorema de Bolzano</h4>
+                                <p class="text-stone-600">Si una función continua toma valores de signo opuesto en los extremos de un intervalo, podemos asegurar que corta el eje X al menos una vez dentro de ese intervalo.</p>
+                            </div>
+                             <div>
+                                <h4 class="font-semibold text-stone-800">Teorema de Weierstrass</h4>
+                                <p class="text-stone-600">Garantiza que toda función continua en un intervalo cerrado alcanzará un valor máximo y un valor mínimo absolutos dentro de dicho intervalo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 4: PRÁCTICA INTERACTIVA -->
+            <div id="practica" class="content-section hidden">
+                 <p class="text-center text-stone-600 mb-8 max-w-3xl mx-auto">Es hora de practicar. Resuelve un problema típico de la EBAU y utiliza la calculadora para afianzar las reglas de los límites en el infinito de forma rápida y visual.</p>
+                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card p-6">
+                        <h3 class="font-bold text-xl text-teal-700 mb-4">Problema EBAU Resuelto</h3>
+                        <p class="text-stone-600 mb-2"><strong>(Murcia, Junio 2022)</strong> Estudie las asíntotas de la función <span class="katex-style">f(x) = (x² - 4x + 3) / (x² - 1)</span>.</p>
+                        <button id="showSolutionBtn" class="bg-teal-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-teal-700 transition-colors">Mostrar Solución</button>
+                        <div id="solution" class="hidden mt-4 pt-4 border-t border-stone-200 text-stone-600 space-y-2">
+                             <p><strong>A. Vertical:</strong> En <span class="katex-style">x=-1</span>, ya que <span class="katex-style">lim x→-1 f(x) = 8/0 = ∞</span>. (En x=1 hay una discontinuidad evitable).</p>
+                             <p><strong>A. Horizontal:</strong> En <span class="katex-style">y=1</span>, ya que <span class="katex-style">lim x→∞ f(x) = 1</span> (los grados son iguales).</p>
+                        </div>
+                    </div>
+                     <div class="card p-6">
+                        <h3 class="font-bold text-xl text-teal-700 mb-4">Calculadora de Límites al Infinito</h3>
+                        <p class="text-stone-600 mb-4">Comprueba rápidamente el resultado del límite cuando <span class="katex-style">x→∞</span> para un cociente de polinomios. Selecciona el grado del numerador y del denominador.</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="gradoNum" class="font-medium text-stone-700">Grado del Numerador:</label>
+                                <select id="gradoNum" class="w-full mt-1 p-2 border border-stone-300 rounded-md">
+                                    <option value="1">1 (x)</option>
+                                    <option value="2" selected>2 (x²)</option>
+                                    <option value="3">3 (x³)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="gradoDen" class="font-medium text-stone-700">Grado del Denominador:</label>
+                                <select id="gradoDen" class="w-full mt-1 p-2 border border-stone-300 rounded-md">
+                                    <option value="1">1 (x)</option>
+                                    <option value="2" selected>2 (x²)</option>
+                                    <option value="3">3 (x³)</option>
+                                </select>
+                            </div>
+                            <div id="limitResult" class="text-center font-bold text-xl p-4 mt-4 bg-teal-50 text-teal-800 rounded-md">
+                                El límite es 1
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab');
+    const contentSections = document.querySelectorAll('.content-section');
+
+    const indeterminacyData = [
+        {
+            title: "Indeterminación ∞ / ∞",
+            content: "Típica en cocientes de polinomios en el infinito. Se resuelve comparando los grados del numerador (Num) y denominador (Den):<br><ul class='list-disc list-inside ml-4 mt-2'><li>Si Grado(Num) > Grado(Den), el límite es <strong>±∞</strong>.</li><li>Si Grado(Num) < Grado(Den), el límite es <strong>0</strong>.</li><li>Si Grado(Num) = Grado(Den), el límite es el <strong>cociente de los coeficientes principales</strong>.</li></ul>"
+        },
+        {
+            title: "Indeterminación 0 / 0",
+            content: "Aparece en cocientes de funciones que se anulan en un punto. Si son polinomios, se <strong>factoriza</strong> y simplifica. Si hay raíces, se multiplica y divide por el <strong>conjugado</strong>.<br><br><strong>Ejemplo:</strong> lim (x²-1)/(x-1) cuando x→1. Se factoriza a lim (x-1)(x+1)/(x-1) = lim (x+1) = 2."
+        },
+        {
+            title: "Indeterminación 1^∞",
+            content: "Relacionada con el número e. Se resuelve con la fórmula:<br><strong class='katex-style block text-center my-2'>lim [f(x)]<sup>g(x)</sup> = e<sup>lim [f(x)-1]·g(x)</sup></strong><br>Donde lim f(x) = 1 y lim g(x) = ∞."
+        },
+        {
+            title: "Indeterminación ∞ - ∞",
+            content: "Suele aparecer en restas de fracciones o de raíces. El objetivo es convertirla en una del tipo ∞/∞ o 0/0. Si son fracciones, se opera (m.c.m.). Si son raíces, se multiplica y divide por el <strong>conjugado</strong>."
+        }
+    ];
+
+    const accordionContainer = document.getElementById('accordion-container');
+    indeterminacyData.forEach((item, index) => {
+        const accordionItem = document.createElement('div');
+        accordionItem.className = 'card border-stone-200';
+        accordionItem.innerHTML = `
+            <button class="accordion-header w-full flex justify-between items-center p-4 text-left font-semibold text-stone-700 hover:bg-stone-50">
+                <span>${item.title}</span>
+                <span class="transform transition-transform duration-300">▼</span>
+            </button>
+            <div class="accordion-content">
+                <div class="p-4 pt-0 text-stone-600">${item.content}</div>
+            </div>
+        `;
+        accordionContainer.appendChild(accordionItem);
+    });
+    
+    document.querySelectorAll('.accordion-header').forEach(button => {
+        button.addEventListener('click', () => {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('span:last-child');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                document.querySelectorAll('.accordion-content').forEach(c => c.style.maxHeight = null);
+                document.querySelectorAll('.accordion-header span:last-child').forEach(i => i.style.transform = 'rotate(0deg)');
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    });
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+
+            tabs.forEach(t => {
+                t.classList.remove('tab-active');
+                t.classList.add('tab-inactive');
+            });
+            tab.classList.remove('tab-inactive');
+            tab.classList.add('tab-active');
+
+            contentSections.forEach(section => {
+                if (section.id === target) {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    const ctx = document.getElementById('limitChart').getContext('2d');
+    const f = x => (x*x - 1) / (x - 1); 
+
+    const chartData = {
+        labels: Array.from({length: 21}, (_, i) => (i * 0.1).toFixed(1)),
+        datasets: [{
+            label: 'f(x)',
+            data: Array.from({length: 21}, (_, i) => i * 0.1).map(x => x === 1 ? null : f(x)),
+            borderColor: '#0d9488',
+            tension: 0.1,
+            borderWidth: 2,
+            pointRadius: 0
+        }, {
+            label: 'Punto móvil',
+            data: [{x: 0.1, y: f(0.1)}],
+            backgroundColor: '#0f766e',
+            pointRadius: 6,
+            pointHoverRadius: 8
+        }, {
+            label: 'Límite',
+            data: [{x: 1, y: 2}],
+            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+            borderColor: 'rgb(255, 99, 132)',
+            pointRadius: 8,
+            pointStyle: 'circle',
+            borderWidth: 2
+        }]
+    };
+    
+    const limitChart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    position: 'bottom',
+                    title: { display: true, text: 'x' }
+                },
+                y: {
+                    title: { display: true, text: 'f(x)'}
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
+            },
+            animation: false
+        }
+    });
+
+    const slider = document.getElementById('xSlider');
+    const xValueSpan = document.getElementById('xValue');
+    const yValueSpan = document.getElementById('yValue');
+
+    slider.addEventListener('input', function() {
+        const xVal = parseFloat(this.value);
+        let yVal;
+        if (Math.abs(xVal - 1.0) < 0.001) {
+             yVal = 2.0; 
+        } else {
+             yVal = f(xVal);
+        }
+        
+        limitChart.data.datasets[1].data = [{x: xVal, y: yVal}];
+        limitChart.update();
+        
+        xValueSpan.textContent = xVal.toFixed(2);
+        yValueSpan.textContent = yVal.toFixed(2);
+    });
+
+    document.getElementById('showSolutionBtn').addEventListener('click', function() {
+        document.getElementById('solution').classList.toggle('hidden');
+    });
+
+    const gradoNumSelect = document.getElementById('gradoNum');
+    const gradoDenSelect = document.getElementById('gradoDen');
+    const resultDiv = document.getElementById('limitResult');
+
+    function calculateLimit() {
+        const num = parseInt(gradoNumSelect.value);
+        const den = parseInt(gradoDenSelect.value);
+        let result = '';
+
+        if (num > den) {
+            result = 'El límite es ∞';
+        } else if (num < den) {
+            result = 'El límite es 0';
+        } else {
+            result = 'El límite es 1 (cociente de coeficientes)';
+        }
+        resultDiv.textContent = result;
+    }
+    
+    gradoNumSelect.addEventListener('change', calculateLimit);
+    gradoDenSelect.addEventListener('change', calculateLimit);
+    calculateLimit();
+});
+</script>
+
+</body>
+</html>
