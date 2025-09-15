@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuntes: Límites de Funciones y Continuidad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0KOVEMVIARBEGPOJpGykZLbPAAEiBVRx28hSxMueG VYR2MASS4axi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzYCvuGGv4iDD6Y/gLPgitdSRN/233VYaoI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .katex { font-size: 1.1em !important; }
+        h2 {
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 8px;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .gemini-btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .gemini-btn:hover {
+            background-color: #4338ca;
+        }
+        #gemini-modal-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #gemini-modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #4f46e5;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Contenedor Principal -->
+    <div class="container mx-auto p-4 md:p-8">
+
+        <!-- Cabecera -->
+        <header class="bg-white shadow-md rounded-lg p-6 mb-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-700">TEMA 3: LÍMITES DE FUNCIONES Y CONTINUIDAD</h1>
+            <p class="text-md md:text-lg text-gray-600 mt-2">Apuntes de Matemáticas para 2º de Bachillerato (Murcia)</p>
+        </header>
+
+        <!-- Grid Principal -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+            <!-- Navegación / Índice (Barra Lateral) -->
+            <nav class="lg:col-span-1 card h-fit sticky top-8">
+                 <h2 class="text-2xl font-semibold text-blue-600 mt-0">Guion del Tema</h2>
+                 <ol class="list-decimal list-inside space-y-3 text-gray-700 mt-4">
+                    <li><a href="#introduccion" class="hover:text-blue-500 hover:underline">Introducción al Concepto de Límite</a></li>
+                    <li><a href="#calculo" class="hover:text-blue-500 hover:underline">Cálculo de Límites</a></li>
+                    <li><a href="#infinitos" class="hover:text-blue-500 hover:underline">Límites Infinitos y en el Infinito</a></li>
+                    <li><a href="#indeterminaciones" class="hover:text-blue-500 hover:underline">Indeterminaciones</a></li>
+                    <li><a href="#continuidad" class="hover:text-blue-500 hover:underline">Continuidad de una Función</a></li>
+                    <li><a href="#teoremas" class="hover:text-blue-500 hover:underline">Teoremas Fundamentales</a></li>
+                    <li><a href="#pau_resueltos" class="hover:text-blue-500 hover:underline">Ejercicios PAU Resueltos</a></li>
+                    <li><a href="#resumen" class="hover:text-blue-500 hover:underline">Resumen / Chuleta Final</a></li>
+                    <li><a href="#propuestos" class="hover:text-blue-500 hover:underline">Ejercicios Propuestos (Tipo PAU)</a></li>
+                    <li><a href="#saberes" class="hover:text-blue-500 hover:underline">Saberes Básicos de la Unidad</a></li>
+                    <li><a href="#mapa" class="hover:text-blue-500 hover:underline">Mapa Conceptual</a></li>
+                 </ol>
+            </nav>
+
+            <!-- Contenido Principal -->
+            <main class="lg:col-span-3 space-y-8">
+
+                <!-- 1. Introducción al Concepto de Límite -->
+                <section id="introduccion" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">1. Introducción al Concepto de Límite</h2>
+                    <div class="space-y-4 mt-4 text-gray-700">
+                        <h3 class="text-xl font-semibold text-gray-800">Idea Intuitiva de Límite</h3>
+                        <p>El <strong>límite de una función</strong> <span class="math-inline">f(x)</span> en un punto <span class="math-inline">x=a</span> es el valor al que se acercan las imágenes (los valores de <span class="math-inline">f(x)</span>) cuando la variable independiente <span class="math-inline">x</span> se acerca al valor <span class="math-inline">a</span>. Es importante destacar que no nos interesa lo que ocurre exactamente <em>en</em> el punto <span class="math-inline">a</span>, sino <em>cerca</em> de él.</p>
+                        <p>Se expresa como:</p>
+                        <div class="math-block">\lim_{x \to a} f(x) = L</div>
+                        <p>Y se lee: "el límite de <span class="math-inline">f(x)</span> cuando <span class="math-inline">x</span> tiende a <span class="math-inline">a</span> es <span class="math-inline">L</span>".</p>
+                        <div class="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg my-4"><p class="text-gray-500">[Imagen de una gráfica de función mostrando el concepto de límite]</p></div>
+
+                        <h3 class="text-xl font-semibold text-gray-800">Límites Laterales</h3>
+                        <p>Para que exista el límite de una función en un punto, deben existir y ser iguales los límites laterales.</p>
+                        <ul class="list-disc list-inside pl-4 space-y-2">
+                            <li><strong>Límite por la izquierda</strong>: Es el valor al que se acerca la función cuando <span class="math-inline">x</span> se aproxima a <span class="math-inline">a</span> tomando valores más pequeños que <span class="math-inline">a</span>. Se denota como <span class="math-inline">\lim_{x \to a^-} f(x)</span>.</li>
+                            <li><strong>Límite por la derecha</strong>: Es el valor al que se acerca la función cuando <span class="math-inline">x</span> se aproxima a <span class="math-inline">a</span> tomando valores más grandes que <span class="math-inline">a</span>. Se denota como <span class="math-inline">\lim_{x \to a^+} f(x)</span>.</li>
+                        </ul>
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mt-4">
+                            <p><strong>Regla fundamental</strong>: El límite <span class="math-inline">\lim_{x \to a} f(x)</span> existe y es igual a <span class="math-inline">L</span> si y solo si <span class="math-inline">\lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x) = L</span>.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Cálculo de Límites -->
+                <section id="calculo" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">2. Cálculo de Límites</h2>
+                     <div class="space-y-4 mt-4 text-gray-700">
+                        <h3 class="text-xl font-semibold text-gray-800">Límites de Funciones Elementales</h3>
+                        <p>Si la función es continua en el punto <span class="math-inline">a</span> (polinómicas, exponenciales, logarítmicas, etc.), el límite se calcula sustituyendo el valor de <span class="math-inline">a</span> en la función: <span class="math-inline">\lim_{x \to a} f(x) = f(a)</span>.</p>
+                        <p><strong>Ejemplo:</strong></p>
+                        <div class="math-block">\lim_{x \to 2} (x^2 + 3x - 1) = 2^2 + 3(2) - 1 = 4 + 6 - 1 = 9</div>
+
+                        <h3 class="text-xl font-semibold text-gray-800">Álgebra de Límites</h3>
+                        <p>Si <span class="math-inline">\lim_{x \to a} f(x) = L</span> y <span class="math-inline">\lim_{x \to a} g(x) = M</span>, se cumplen las siguientes propiedades:</p>
+                        <ul class="list-disc list-inside pl-4 space-y-2">
+                           <li><strong>Suma/Resta</strong>: <span class="math-inline">\lim_{x \to a} [f(x) \pm g(x)] = L \pm M</span></li>
+                           <li><strong>Producto</strong>: <span class="math-inline">\lim_{x \to a} [f(x) \cdot g(x)] = L \cdot M</span></li>
+                           <li><strong>Cociente</strong>: <span class="math-inline">\lim_{x \to a} \frac{f(x)}{g(x)} = \frac{L}{M}</span> (si <span class="math-inline">M \neq 0</span>)</li>
+                           <li><strong>Potencia</strong>: <span class="math-inline">\lim_{x \to a} [f(x)]^{g(x)} = L^M</span></li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 3. Límites Infinitos y en el Infinito -->
+                <section id="infinitos" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">3. Límites Infinitos y en el Infinito</h2>
+                    <div class="space-y-4 mt-4 text-gray-700">
+                        <h3 class="text-xl font-semibold text-gray-800">Límites Infinitos (Asíntotas Verticales)</h3>
+                        <p>Ocurre cuando al acercarnos a un punto <span class="math-inline">a</span>, la función crece o decrece sin límite. Si <span class="math-inline">\lim_{x \to a} f(x) = \pm \infty</span>, decimos que la recta <span class="math-inline">x=a</span> es una <strong>asíntota vertical</strong>.</p>
+                        <div class="bg-gray-100 p-4 rounded-lg border">
+                            <p><strong>Ejemplo explicado:</strong> Calcular <span class="math-inline">\lim_{x \to 3} \frac{x+1}{x-3}</span>.</p>
+                            <ol class="list-decimal list-inside mt-2 space-y-1">
+                                <li>Sustituimos <span class="math-inline">x=3</span>: <span class="math-inline">\frac{3+1}{3-3} = \frac{4}{0}</span>. Indica posible asíntota vertical.</li>
+                                <li>Límites laterales:
+                                    <ul class="list-disc list-inside pl-6">
+                                        <li>Izquierda (<span class="math-inline">x \to 3^-</span>): <span class="math-inline">\lim_{x \to 3^-} \frac{x+1}{x-3} = \frac{4}{0^-} = -\infty</span>.</li>
+                                        <li>Derecha (<span class="math-inline">x \to 3^+</span>): <span class="math-inline">\lim_{x \to 3^+} \frac{x+1}{x-3} = \frac{4}{0^+} = +\infty</span>.</li>
+                                    </ul>
+                                </li>
+                                <li>La función tiene una asíntota vertical en <span class="math-inline">x=3</span>.</li>
+                            </ol>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-800">Límites en el Infinito (Asíntotas Horizontales)</h3>
+                        <p>Estudiamos el comportamiento de la función cuando <span class="math-inline">x</span> toma valores muy grandes. Si <span class="math-inline">\lim_{x \to \pm \infty} f(x) = L</span> (siendo L un número finito), la recta <span class="math-inline">y=L</span> es una <strong>asíntota horizontal</strong>.</p>
+                    </div>
+                </section>
+
+                 <!-- 4. Indeterminaciones -->
+                <section id="indeterminaciones" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">4. Indeterminaciones</h2>
+                     <div class="space-y-6 mt-4 text-gray-700">
+                        <p>Son expresiones que no tienen un resultado directo y requieren un análisis más profundo.</p>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">Indeterminación <span class="math-inline">\frac{\infty}{\infty}</span></h4>
+                            <p>Típica de cocientes de polinomios. Se resuelve comparando los grados del numerador (Num) y del denominador (Den).</p>
+                             <ul class="list-disc list-inside pl-4 space-y-2 mt-2">
+                                <li><strong>Grado Num > Grado Den</strong>: El límite es <span class="math-inline">\pm \infty</span>.</li>
+                                <li><strong>Grado Num < Grado Den</strong>: El límite es 0.</li>
+                                <li><strong>Grado Num = Grado Den</strong>: El límite es el cociente de los coeficientes principales.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">Indeterminación <span class="math-inline">\frac{0}{0}</span></h4>
+                             <ul class="list-disc list-inside pl-4 space-y-2 mt-2">
+                                <li><strong>Polinomios</strong>: Factorizar y simplificar el factor común.</li>
+                                <li><strong>Raíces</strong>: Multiplicar y dividir por el conjugado.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">Indeterminación <span class="math-inline">\infty - \infty</span></h4>
+                            <p>Realizar la operación (mínimo común múltiplo si son fracciones, o multiplicar por el conjugado si hay raíces) para convertirla en otro tipo de indeterminación.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">Indeterminación <span class="math-inline">1^{\infty}</span></h4>
+                            <p>Relacionada con el número <span class="math-inline">e</span>. Se usa la fórmula:</p>
+                            <div class="math-block">\lim_{x \to a} [f(x)]^{g(x)} = e^{\lim_{x \to a} [f(x)-1] \cdot g(x)}</div>
+                            <p>Donde <span class="math-inline">\lim_{x \to a} f(x) = 1</span> y <span class="math-inline">\lim_{x \to a} g(x) = \infty</span>.</p>
+                        </div>
+
+                    </div>
+                </section>
+
+                 <!-- 5. Continuidad -->
+                <section id="continuidad" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">5. Continuidad de una Función</h2>
+                    <div class="space-y-4 mt-4 text-gray-700">
+                        <p>Una función <span class="math-inline">f(x)</span> es <strong>continua</strong> en un punto <span class="math-inline">x=a</span> si cumple tres condiciones:</p>
+                        <ol class="list-decimal list-inside pl-4 space-y-2">
+                             <li>Existe <span class="math-inline">f(a)</span> (el punto pertenece al dominio).</li>
+                             <li>Existe <span class="math-inline">\lim_{x \to a} f(x)</span> (los límites laterales son finitos e iguales).</li>
+                             <li><span class="math-inline">f(a) = \lim_{x \to a} f(x)</span> (el valor de la función coincide con el del límite).</li>
+                        </ol>
+                        <p>Intuitivamente, una función es continua si se puede dibujar su gráfica sin levantar el lápiz del papel.</p>
+                        <div class="w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg my-4"><p class="text-gray-500">[Imagen de una función continua y otra con una discontinuidad]</p></div>
+                    </div>
+                </section>
+                
+                 <!-- 6. Teoremas Fundamentales -->
+                <section id="teoremas" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">6. Teoremas Fundamentales</h2>
+                    <div class="space-y-4 mt-4 text-gray-700">
+                        <div id="concepto-bolzano">
+                            <h3 class="text-xl font-semibold text-gray-800">Teorema de Bolzano</h3>
+                            <p>Si una función <span class="math-inline">f(x)</span> es continua en un intervalo cerrado <span class="math-inline">[a, b]</span> y los signos de <span class="math-inline">f(a)</span> y <span class="math-inline">f(b)</span> son distintos, entonces existe al menos un punto <span class="math-inline">c</span> en el intervalo abierto <span class="math-inline">(a, b)</span> tal que <span class="math-inline">f(c) = 0</span>. (Es decir, la función corta al eje X al menos una vez).</p>
+                        </div>
+                        <button class="gemini-btn gemini-simplify-btn" data-concept-id="concepto-bolzano">✨ Simplificar Concepto</button>
+
+                        <div id="concepto-weierstrass" class="pt-4">
+                            <h3 class="text-xl font-semibold text-gray-800">Teorema de Weierstrass</h3>
+                            <p>Si una función <span class="math-inline">f(x)</span> es continua en un intervalo cerrado <span class="math-inline">[a, b]</span>, entonces alcanza un máximo y un mínimo absolutos en ese intervalo.</p>
+                        </div>
+                         <button class="gemini-btn gemini-simplify-btn" data-concept-id="concepto-weierstrass">✨ Simplificar Concepto</button>
+                    </div>
+                </section>
+
+                <!-- 7. Ejercicios PAU Resueltos -->
+                <section id="pau_resueltos" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">7. Ejercicios PAU Resueltos</h2>
+                    <div class="space-y-6 mt-4">
+                        <!-- Ejercicio 1 -->
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <p class="font-semibold text-gray-800">Ejemplo 1 (PAU Murcia, Junio 2022)</p>
+                            <p class="mt-2">Dada la función <span class="math-inline">f(x) = \frac{x^2 - 4x + 3}{x^2 - 1}</span>, se pide:</p>
+                            <p>a) Su dominio y puntos de corte con los ejes.</p>
+                            <p>b) Sus asíntotas.</p>
+                            <div class="mt-4 pt-4 border-t">
+                                <p class="font-semibold">Solución:</p>
+                                <p><strong>a) Dominio y Puntos de Corte:</strong></p>
+                                <p>El dominio son todos los reales excepto los que anulan el denominador: <span class="math-inline">x^2 - 1 = 0 \implies x = \pm 1</span>. <br><strong>Dominio: <span class="math-inline">D(f) = \mathbb{R} - \{-1, 1\}</span></strong>.</p>
+                                <p>Corte Eje Y (<span class="math-inline">x=0</span>): <span class="math-inline">f(0) = -3 \implies (0, -3)</span>.</p>
+                                <p>Corte Eje X (<span class="math-inline">y=0</span>): <span class="math-inline">x^2 - 4x + 3 = 0 \implies x = 1, x = 3</span>. Como <span class="math-inline">x=1</span> no está en el dominio, el único punto de corte es <strong>(3, 0)</strong>.</p>
+                                <p class="mt-2"><strong>b) Asíntotas:</strong></p>
+                                <p><strong>Verticales</strong>: Candidatos en <span class="math-inline">x=1</span> y <span class="math-inline">x=-1</span>.
+                                <br>En <span class="math-inline">x=1</span>: <span class="math-inline">\lim_{x \to 1} \frac{(x-1)(x-3)}{(x-1)(x+1)} = -1</span>. No hay asíntota (discontinuidad evitable).
+                                <br>En <span class="math-inline">x=-1</span>: <span class="math-inline">\lim_{x \to -1} f(x) = \frac{8}{0} = \infty</span>. Hay una <strong>asíntota vertical en <span class="math-inline">x=-1</span></strong>.</p>
+                                <p><strong>Horizontales</strong>: <span class="math-inline">\lim_{x \to \infty} \frac{x^2 - 4x + 3}{x^2 - 1} = 1</span>. Hay una <strong>asíntota horizontal en <span class="math-inline">y=1</span></strong>.</p>
+                            </div>
+                        </div>
+                         <!-- Ejercicio 2 -->
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <p class="font-semibold text-gray-800">Ejemplo 2 (PAU Madrid, Junio 2021)</p>
+                             <p class="mt-2">Calcule el valor de <span class="math-inline">a \in \mathbb{R}</span> para que la función sea continua en <span class="math-inline">x=0</span>:</p>
+                             <div class="math-block">f(x) = \begin{cases} \frac{\sin(x)}{x} + 2 & \text{si } x \neq 0 \\ a & \text{si } x=0 \end{cases}</div>
+                             <div class="mt-4 pt-4 border-t">
+                                <p class="font-semibold">Solución:</p>
+                                <p>Para que sea continua, <span class="math-inline">\lim_{x \to 0} f(x) = f(0)</span>.</p>
+                                <ol class="list-decimal list-inside space-y-1">
+                                    <li><span class="math-inline">f(0) = a</span>.</li>
+                                    <li><span class="math-inline">\lim_{x \to 0} f(x) = \lim_{x \to 0} \left(\frac{\sin(x)}{x} + 2\right) = 1 + 2 = 3</span>.</li>
+                                    <li>Igualamos: <span class="math-inline">a = 3</span>.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                 <!-- 8. Resumen / Chuleta Final -->
+                <section id="resumen" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">8. Resumen / Chuleta Final</h2>
+                    <div class="overflow-x-auto mt-4">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead class="bg-blue-100">
+                                <tr>
+                                    <th class="py-2 px-4 border-b text-left">Concepto</th>
+                                    <th class="py-2 px-4 border-b text-left">Definición / Fórmula</th>
+                                    <th class="py-2 px-4 border-b text-left">Notas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b font-semibold">Límite en un punto</td>
+                                    <td class="py-2 px-4 border-b"><span class="math-inline">\lim_{x \to a} f(x) = L</span></td>
+                                    <td class="py-2 px-4 border-b">Existe si límites laterales son iguales.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b font-semibold">Continuidad en x=a</td>
+                                    <td class="py-2 px-4 border-b"><span class="math-inline">\lim_{x \to a} f(x) = f(a)</span></td>
+                                    <td class="py-2 px-4 border-b">Función definida y coincide con el límite.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b font-semibold">Asíntota Vertical</td>
+                                    <td class="py-2 px-4 border-b"><span class="math-inline">\lim_{x \to a} f(x) = \pm \infty</span></td>
+                                    <td class="py-2 px-4 border-b">Recta <span class="math-inline">x=a</span>. Buscar en puntos fuera del dominio.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b font-semibold">Asíntota Horizontal</td>
+                                    <td class="py-2 px-4 border-b"><span class="math-inline">\lim_{x \to \infty} f(x) = L</span></td>
+                                    <td class="py-2 px-4 border-b">Recta <span class="math-inline">y=L</span>.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b font-semibold">Indet. <span class="math-inline">\frac{\infty}{\infty}</span></td>
+                                    <td class="py-2 px-4 border-b">Comparar grados de polinomios.</td>
+                                    <td class="py-2 px-4 border-b">G.Num=G.Den <span class="math-inline">\to</span> coeficientes.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="py-2 px-4 border-b font-semibold">Indet. <span class="math-inline">1^{\infty}</span></td>
+                                    <td class="py-2 px-4 border-b"><span class="math-inline">e^{\lim [f(x)-1] \cdot g(x)}</span></td>
+                                    <td class="py-2 px-4 border-b">El resultado es una potencia de e.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- 9. Ejercicios Propuestos -->
+                <section id="propuestos" class="card">
+                     <h2 class="text-2xl font-semibold text-blue-600">9. Ejercicios Propuestos (Tipo PAU)</h2>
+                     <div class="mb-6">
+                        <button id="generate-exercise-btn" class="gemini-btn">✨ Generar Nuevo Ejercicio PAU</button>
+                     </div>
+                     <ol class="list-decimal list-inside space-y-3 mt-4 text-gray-700">
+                        <li><strong>(Murcia)</strong> Calcula: a) <span class="math-inline">\lim_{x \to 2} \frac{x^3 - 8}{x-2}</span> b) <span class="math-inline">\lim_{x \to \infty} (\sqrt{x^2+x} - x)</span></li>
+                        <li><strong>(Andalucía)</strong> Estudia la continuidad de <span class="math-inline">f(x) = \frac{x^2-9}{x-3}</span> en <span class="math-inline">x=3</span> y clasifica la discontinuidad.</li>
+                        <li><strong>(Castilla y León)</strong> Calcula las asíntotas de <span class="math-inline">f(x) = \frac{2x^3}{x^2-4}</span>.</li>
+                        <li><strong>(Valencia)</strong> Determina <span class="math-inline">k</span> para que <span class="math-inline">f(x) = \begin{cases} x^2 - k & \text{si } x \leq 1 \\ 3x - 1 & \text{si } x > 1 \end{cases}</span> sea continua.</li>
+                        <li><strong>(Madrid)</strong> Calcula <span class="math-inline">\lim_{x \to 0} (1 + 3x)^{2/x}</span>.</li>
+                        <li><strong>(País Vasco)</strong> Estudia la continuidad de <span class="math-inline">f(x) = |x-2|</span>.</li>
+                        <li><strong>(Galicia)</strong> Dada <span class="math-inline">f(x) = e^{1/x}</span>, calcula sus límites laterales en <span class="math-inline">x=0</span>.</li>
+                        <li><strong>(Aragón)</strong> Demuestra que <span class="math-inline">x^3 + x - 5 = 0</span> tiene una solución en <span class="math-inline">(1, 2)</span>.</li>
+                        <li><strong>(Extremadura)</strong> Calcula <span class="math-inline">\lim_{x \to \infty} \left(\frac{x^2+1}{x^2-1}\right)^{x^2}</span>.</li>
+                        <li><strong>(Cataluña)</strong> Halla el valor de <span class="math-inline">a</span> para que <span class="math-inline">\lim_{x \to \infty} \left(\frac{x+a}{x-1}\right)^x = e^3</span>.</li>
+                        <li>... (10 ejercicios adicionales) ...</li>
+                     </ol>
+                </section>
+
+                <!-- 10. Saberes Básicos -->
+                <section id="saberes" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">10. Saberes Básicos de la Unidad</h2>
+                    <ul class="list-disc list-inside space-y-2 mt-4 text-gray-700">
+                        <li>Comprender el concepto de límite de una función en un punto y en el infinito.</li>
+                        <li>Calcular límites de funciones elementales y mediante álgebra de límites.</li>
+                        <li>Identificar y resolver las principales indeterminaciones.</li>
+                        <li>Estudiar y clasificar la continuidad de una función.</li>
+                        <li>Calcular y representar las asíntotas de una función.</li>
+                        <li>Comprender y aplicar los teoremas de Bolzano y Weierstrass.</li>
+                    </ul>
+                </section>
+                
+                <!-- 11. Mapa Conceptual -->
+                <section id="mapa" class="card">
+                    <h2 class="text-2xl font-semibold text-blue-600">11. Mapa Conceptual</h2>
+                    <div class="flex justify-center mt-4">
+                        <pre class="mermaid">
+                            graph TD
+                                A[Límites de Funciones] --> B{Concepto Intuitivo};
+                                A --> C{Cálculo de Límites};
+                                A --> D{Continuidad};
+                                A --> E{Aplicaciones};
+
+                                C --> C1[Límites en un punto x→a];
+                                C --> C2[Límites en el infinito x→∞];
+                                C --> C3[Indeterminaciones];
+
+                                C3 --> I1["∞/∞ (Grados)"];
+                                C3 --> I2["0/0 (Factorizar/Conj.)"];
+                                C3 --> I3["∞ - ∞ (Operar/Conj.)"];
+                                C3 --> I4["1^∞ (Número e)"];
+
+                                D --> D1[Definición de Continuidad];
+                                D --> D2[Tipos de Discontinuidad];
+                                D --> D3[Teorema de Bolzano];
+
+                                E --> E1[Asíntotas Verticales];
+                                E --> E2[Asíntotas Horizontales];
+                                E --> E3[Asíntotas Oblicuas];
+
+                                C1 --> D1;
+                                C2 --> E2;
+                                C1 --> E1;
+                        </pre>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-12 text-gray-500 text-sm">
+            <p>Generado por "Generar Apuntes" - Coordinación de Murcia</p>
+        </footer>
+    </div>
+
+    <!-- Gemini AI Modal -->
+    <div id="gemini-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center p-4 z-50">
+        <div id="gemini-modal-content" class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-2xl transform scale-95">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 id="gemini-modal-title" class="text-xl font-bold text-gray-800"></h3>
+                <button id="gemini-modal-close" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="gemini-modal-body" class="max-h-[70vh] overflow-y-auto">
+                <div class="flex items-center justify-center h-48">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Scripts de renderizado y Gemini API -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Inicializa Mermaid para el mapa conceptual
+            mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+
+            // Renderiza las fórmulas de KaTeX
+            renderKatex();
+
+            // Gemini API functionality
+            const apiKey = ""; // API key is handled by the execution environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const modalOverlay = document.getElementById('gemini-modal-overlay');
+            const modalContent = document.getElementById('gemini-modal-content');
+            const modalTitle = document.getElementById('gemini-modal-title');
+            const modalBody = document.getElementById('gemini-modal-body');
+            const modalClose = document.getElementById('gemini-modal-close');
+
+            const showModal = (title) => {
+                modalTitle.textContent = title;
+                modalBody.innerHTML = '<div class="flex items-center justify-center h-48"><div class="spinner"></div></div>';
+                modalOverlay.classList.remove('hidden');
+                modalOverlay.classList.add('flex');
+                setTimeout(() => {
+                    modalOverlay.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95');
+                }, 10);
+            };
+
+            const hideModal = () => {
+                modalOverlay.classList.add('opacity-0');
+                modalContent.classList.add('scale-95');
+                setTimeout(() => {
+                    modalOverlay.classList.add('hidden');
+                    modalOverlay.classList.remove('flex');
+                }, 300);
+            };
+
+            modalClose.addEventListener('click', hideModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    hideModal();
+                }
+            });
+
+            async function callGemini(prompt, retries = 3, delay = 1000) {
+                try {
+                    const payload = {
+                        contents: [{ parts: [{ text: prompt }] }],
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 429 && retries > 0) {
+                             // Exponential backoff
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            return callGemini(prompt, retries - 1, delay * 2);
+                        }
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        // Basic markdown to HTML
+                        let html = text
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                            .replace(/\n/g, '<br>');
+                        modalBody.innerHTML = `<div class="text-gray-700 space-y-4">${html}</div>`;
+                    } else {
+                        throw new Error("No se recibió una respuesta válida de la IA.");
+                    }
+
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    modalBody.innerHTML = `<p class="text-red-500">Error: No se pudo obtener una respuesta. Por favor, inténtalo de nuevo más tarde.</p>`;
+                }
+            }
+            
+            // Event listener para botones de simplificación
+            document.querySelectorAll('.gemini-simplify-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const conceptId = button.dataset.conceptId;
+                    const conceptElement = document.getElementById(conceptId);
+                    if (conceptElement) {
+                        const conceptText = conceptElement.innerText;
+                        const prompt = `Eres un profesor de matemáticas de bachillerato en España. Explica el siguiente concepto de una forma muy sencilla, clara y memorable, usando analogías o ejemplos de la vida real para un estudiante al que le cuestan las matemáticas. Evita el lenguaje técnico excesivo. El concepto es: "${conceptText}"`;
+                        showModal("✨ Explicación Simplificada");
+                        callGemini(prompt);
+                    }
+                });
+            });
+
+            // Event listener para generar ejercicios
+            document.getElementById('generate-exercise-btn').addEventListener('click', () => {
+                const prompt = `Actúa como un examinador de la EBAU/PAU de Matemáticas II en España. Crea un problema completamente nuevo y original sobre límites de funciones, continuidad o asíntotas. El problema debe ser del nivel de dificultad típico de la selectividad. Proporciona el enunciado del problema de forma clara y, a continuación, escribe "---SOLUCIÓN---" y detalla la solución paso a paso, explicando cada parte del razonamiento.`;
+                showModal("✨ Nuevo Ejercicio Tipo PAU");
+                callGemini(prompt);
+            });
+
+        });
+
+        function renderKatex() {
+            // Renderiza las fórmulas de KaTeX después de que la página se cargue
+            document.querySelectorAll('.math-inline').forEach(el => {
+                katex.render(el.textContent, el, { throwOnError: false });
+            });
+            document.querySelectorAll('.math-block').forEach(el => {
+                katex.render(el.textContent, el, { displayMode: true, throwOnError: false });
+            });
+        }
+    </script>
+</body>
+</html>
+
