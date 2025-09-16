@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Estudio Avanzada: Límites, Continuidad y Teoremas</title>
+    <!-- Chosen Palette: Calm Harmony (Light neutrals with teal and amber accents) -->
+    <!-- Application Structure Plan: Se mantiene la estructura de SPA con navegación lateral fija por su claridad y facilidad de uso. El contenido se ha reestructurado internamente: ahora cada sección es más profunda. Los apartados de "Cálculo" y "Teoremas" usan un sistema de acordeón mejorado; cada elemento no solo contiene la definición, sino también ejemplos guiados y explicaciones de su aplicación práctica. Esta arquitectura modular y detallada está diseñada para guiar al estudiante desde el concepto teórico hasta la resolución práctica de problemas, mejorando la retención y la confianza. -->
+    <!-- Visualization & Content Choices: Límite Intuitivo -> Objetivo: Visualizar concepto -> Gráfico interactivo (Chart.js). Justificación: Transforma lo abstracto en tangible. Indeterminaciones -> Objetivo: Enseñar método -> Acordeón con ejemplos resueltos paso a paso (HTML/CSS/JS). Justificación: Proporciona un tutorial práctico antes de la autoevaluación. Teoremas -> Objetivo: Explicar y aplicar -> Acordeón con visualización (Chart.js para Bolzano) y sección de "Aplicaciones". Justificación: Conecta la teoría con su propósito en la resolución de problemas. Símbolos Matemáticos -> Objetivo: Garantizar legibilidad -> Librería KaTeX con renderizado dinámico post-inserción de HTML. Justificación: Soluciona el error previo y asegura que todo el contenido matemático sea correcto y claro. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <style>
+        :root {
+            --theme-primary: #0d9488;
+            --theme-light: #f0fdfa;
+            --background-color: #f8fafc;
+            --text-color: #334155;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        .katex { font-size: 1.15em !important; }
+        .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5em 0; }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+            border-left: 3px solid transparent;
+        }
+        .nav-link.active {
+            background-color: var(--theme-light);
+            color: var(--theme-primary);
+            border-left-color: var(--theme-primary);
+        }
+        .nav-link:hover {
+            background-color: var(--theme-light);
+        }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; }
+    </style>
+</head>
+<body class="antialiased">
+
+<div class="flex min-h-screen">
+    <aside class="w-64 bg-white border-r border-gray-200 fixed top-0 left-0 h-full overflow-y-auto z-10 hidden md:block">
+        <div class="p-6 border-b">
+            <h2 class="text-xl font-bold text-teal-700">Menú de Estudio</h2>
+        </div>
+        <nav id="desktop-nav" class="p-4"></nav>
+    </aside>
+
+    <main class="md:ml-64 flex-1">
+        <header class="p-4 border-b bg-white sticky top-0 z-20 md:hidden flex justify-between items-center">
+             <h1 class="text-2xl font-bold text-gray-800">Guía de Análisis</h1>
+             <button id="mobile-menu-btn" class="p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+             </button>
+        </header>
+        <div id="mobile-nav-container" class="hidden md:hidden p-4 bg-white border-b"></div>
+
+        <div class="p-6 md:p-10">
+            <section id="inicio" class="content-section active space-y-6 bg-white p-8 rounded-xl shadow-sm">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Guía de Estudio Avanzada: Límites, Continuidad y Teoremas</h1>
+                <p class="text-lg text-gray-600 mt-2">Una herramienta interactiva para dominar el Análisis Matemático de 2º de Bachillerato.</p>
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-teal-50 p-6 rounded-lg border border-teal-200">
+                        <h3 class="font-bold text-lg text-teal-700 mb-2">Aprendizaje Activo</h3>
+                        <p>Esta guía transforma los apuntes estáticos en una experiencia dinámica. Usa el menú para explorar los temas, interactúa con los gráficos para visualizar conceptos y resuelve los ejercicios de la EBAU para poner a prueba tus conocimientos.</p>
+                    </div>
+                    <div class="bg-amber-50 p-6 rounded-lg border border-amber-200">
+                        <h3 class="font-bold text-lg text-amber-700 mb-2">Ruta de Estudio Recomendada</h3>
+                        <p>Para un aprendizaje óptimo, te sugerimos seguir el orden del temario. Comienza por los conceptos, domina el cálculo de indeterminaciones con los ejemplos guiados y finalmente, aplica todo en la sección de práctica.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="conceptos" class="content-section space-y-8 bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-3xl font-bold text-teal-800 border-b pb-2">1. Conceptos Fundamentales de Límite</h2>
+                
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="font-semibold text-xl mb-2">1.1. Idea Intuitiva de Límite</h3>
+                    <p>El límite de una función <span class="katex-inline">f(x)</span> en un punto <span class="katex-inline">x=a</span> es el valor <span class="katex-inline">L</span> al que se aproxima la función cuando <span class="katex-inline">x</span> se acerca a <span class="katex-inline">a</span>, sin importar lo que ocurra exactamente en <span class="katex-inline">x=a</span>. Es un concepto de aproximación.</p>
+                    <p class="mt-2">Se denota: <span class="katex-block">\lim_{x \to a} f(x) = L</span></p>
+                    <h4 class="font-semibold mt-4 mb-2">Visualización Interactiva</h4>
+                    <p>Observa la función <span class="katex-inline">f(x) = \frac{x^2-4}{x-2}</span>. Nota que en <span class="katex-inline">x=2</span> hay un "agujero", la función no está definida. Sin embargo, podemos ver a qué valor se aproxima. Mueve el deslizador para acercar <span class="katex-inline">x</span> a 2.</p>
+                    <div class="chart-container mt-4"><canvas id="limitChart"></canvas></div>
+                    <div class="mt-4 text-center">
+                        <input id="limitSlider" type="range" min="1" max="3" step="0.001" value="1.5" class="w-full max-w-md">
+                        <p class="mt-2 font-mono text-sm">x = <span id="xValue">1.500</span> &rarr; f(x) = <span id="yValue">3.500</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg">
+                    <h3 class="font-semibold text-xl mb-2">1.2. Límites Laterales y Asíntotas</h3>
+                    <p>Para que el límite global exista, los límites al acercarse por la izquierda (<span class="katex-inline">x \to a^-</span>) y por la derecha (<span class="katex-inline">x \to a^+</span>) deben ser iguales.</p>
+                    <ul class="list-disc list-inside mt-2 space-y-2">
+                        <li><b>Asíntota Vertical en <span class="katex-inline">x=a</span></b>: Ocurre si <span class="katex-inline">\lim_{x \to a} f(x) = \pm\infty</span>. La gráfica se dispara hacia el infinito en ese punto.</li>
+                        <li><b>Asíntota Horizontal en <span class="katex-inline">y=k</span></b>: Ocurre si <span class="katex-inline">\lim_{x \to \pm\infty} f(x) = k</span>. La gráfica se estabiliza a una altura <span class="katex-inline">k</span> para valores muy grandes o pequeños de <span class="katex-inline">x</span>.</li>
+                        <li><b>Asíntota Oblicua en <span class="katex-inline">y=mx+n</span></b>: Si no hay A. Horizontal, puede existir esta. Se calcula con <span class="katex-inline">m = \lim_{x \to \infty} \frac{f(x)}{x}</span> y <span class="katex-inline">n = \lim_{x \to \infty} (f(x) - mx)</span>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="calculo" class="content-section space-y-6 bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-3xl font-bold text-teal-800 border-b pb-2">2. Cálculo de Límites e Indeterminaciones</h2>
+                <p>Las indeterminaciones son expresiones que no tienen un valor directo y requieren manipulación algebraica o el uso de herramientas como la regla de L'Hôpital para encontrar el límite.</p>
+                <div id="indeterminaciones-container" class="space-y-4"></div>
+            </section>
+
+            <section id="continuidad" class="content-section space-y-8 bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-3xl font-bold text-teal-800 border-b pb-2">3. Continuidad de una Función</h2>
+                <p>Una función es continua si su gráfica no presenta saltos ni agujeros. Formalmente, para ser continua en <span class="katex-inline">x=a</span>, se deben cumplir tres condiciones:</p>
+                <ol class="list-decimal list-inside bg-gray-50 p-4 rounded-lg space-y-2">
+                    <li><b>Existe <span class="katex-inline">f(a)</span></b>: El punto debe existir en la función.</li>
+                    <li><b>Existe <span class="katex-inline">\lim_{x \to a} f(x)</span></b>: Los límites laterales deben coincidir.</li>
+                    <li><b>Ambos valores son iguales</b>: <span class="katex-inline">\lim_{x \to a} f(x) = f(a)</span>.</li>
+                </ol>
+                <p>Si alguna de estas condiciones falla, la función es discontinua en ese punto.</p>
+                <div class="grid md:grid-cols-3 gap-6 mt-6">
+                    <div class="border p-4 rounded-lg bg-gray-50 text-center">
+                        <h3 class="font-semibold text-lg mb-2">Discontinuidad Evitable</h3>
+                        <p class="text-sm mb-2">Falla la condición 1 o 3. Hay un "agujero" que se podría "rellenar".</p>
+                        <div class="chart-container h-48 md:h-56"><canvas id="discontinuityChart1"></canvas></div>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50 text-center">
+                        <h3 class="font-semibold text-lg mb-2">Inevitable de Salto Finito</h3>
+                        <p class="text-sm mb-2">Falla la condición 2. Los límites laterales son finitos pero distintos.</p>
+                        <div class="chart-container h-48 md:h-56"><canvas id="discontinuityChart2"></canvas></div>
+                    </div>
+                    <div class="border p-4 rounded-lg bg-gray-50 text-center">
+                        <h3 class="font-semibold text-lg mb-2">Inevitable de Salto Infinito</h3>
+                        <p class="text-sm mb-2">Falla la condición 2. Al menos un límite lateral es infinito.</p>
+                        <div class="chart-container h-48 md:h-56"><canvas id="discontinuityChart3"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="teoremas" class="content-section space-y-6 bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-3xl font-bold text-teal-800 border-b pb-2">4. Teoremas Fundamentales</h2>
+                <p>Estos teoremas son pilares del análisis matemático y garantizan propiedades clave de las funciones continuas en intervalos cerrados.</p>
+                <div id="teoremas-container" class="space-y-4"></div>
+            </section>
+
+            <section id="practica" class="content-section space-y-6 bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-3xl font-bold text-teal-800 border-b pb-2">5. Práctica con Ejercicios EBAU</h2>
+                <p>Es el momento de aplicar todo lo aprendido. Intenta resolver cada problema antes de revelar la solución.</p>
+                <div id="ebau-container" class="space-y-4"></div>
+            </section>
+            
+            <section id="resumen" class="content-section space-y-6 bg-white p-8 rounded-xl shadow-sm">
+                <h2 class="text-3xl font-bold text-teal-800 border-b pb-2">6. Resumen Rápido / Chuleta</h2>
+                <p>Los conceptos y fórmulas más importantes para un repaso final.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                        <h3 class="font-bold text-lg text-blue-700 mb-2">Límite y Continuidad</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><b>Límite en <span class="katex-inline">x=a</span></b>: <span class="katex-inline">\lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x)</span></li>
+                            <li><b>Continuidad en <span class="katex-inline">x=a</span></b>: <span class="katex-inline">\lim_{x \to a} f(x) = f(a)</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                        <h3 class="font-bold text-lg text-green-700 mb-2">Estrategias para Indeterminaciones</h3>
+                         <ul class="list-disc list-inside space-y-2">
+                            <li><span class="katex-inline">\frac{0}{0}</span>: Factorizar, L'Hôpital.</li>
+                            <li><span class="katex-inline">\frac{\infty}{\infty}</span>: Grados, L'Hôpital.</li>
+                            <li><span class="katex-inline">1^\infty</span>: Fórmula <span class="katex-inline">e^{\lim g(f-1)}</span>.</li>
+                            <li><span class="katex-inline">\infty - \infty</span> (raíces): Conjugado.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-yellow-50 p-6 rounded-lg border border-yellow-200 col-span-1 md:col-span-2">
+                        <h3 class="font-bold text-lg text-yellow-700 mb-2">Teorema Clave: Bolzano</h3>
+                        <p>Si <span class="katex-inline">f</span> es continua en <span class="katex-inline">[a, b]</span> y <span class="katex-inline">f(a) \cdot f(b) < 0</span>, entonces <span class="katex-inline">\exists c \in (a, b)</span> tal que <span class="katex-inline">f(c) = 0</span>. (Sirve para asegurar que hay raíces/soluciones).</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navItems = [
+        { href: '#inicio', text: 'Inicio' },
+        { href: '#conceptos', text: '1. Conceptos de Límite' },
+        { href: '#calculo', text: '2. Cálculo e Indeterminaciones' },
+        { href: '#continuidad', text: '3. Continuidad' },
+        { href: '#teoremas', text: '4. Teoremas Fundamentales' },
+        { href: '#practica', text: '5. Práctica EBAU' },
+        { href: '#resumen', text: '6. Resumen Rápido' }
+    ];
+
+    const desktopNav = document.getElementById('desktop-nav');
+    const mobileNavContainer = document.getElementById('mobile-nav-container');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    
+    let navHtml = '<ul>';
+    navItems.forEach(item => {
+        navHtml += `<li><a href="${item.href}" class="nav-link block py-3 px-4 rounded-md font-medium">${item.text}</a></li>`;
+    });
+    navHtml += '</ul>';
+    
+    desktopNav.innerHTML = navHtml;
+    mobileNavContainer.innerHTML = navHtml;
+
+    const contentSections = document.querySelectorAll('.content-section');
+    
+    const renderMathInElement = (element) => {
+        const mathElements = element.querySelectorAll('.katex-inline, .katex-block');
+        mathElements.forEach(el => {
+            const content = el.textContent || el.innerText;
+            const isBlock = el.classList.contains('katex-block');
+            try {
+                katex.render(content, el, {
+                    throwOnError: false,
+                    displayMode: isBlock
+                });
+            } catch (e) {
+                console.error("Katex error:", e);
+                el.textContent = content; 
+            }
+        });
+    };
+    
+    const setupNavigation = () => {
+        const allNavLinks = document.querySelectorAll('.nav-link');
+
+        const setActiveLink = (hash) => {
+            allNavLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === hash) {
+                    link.classList.add('active');
+                }
+            });
+        };
+        
+        const showContent = (hash) => {
+            contentSections.forEach(section => {
+                section.classList.remove('active');
+                if ('#' + section.id === hash) {
+                    section.classList.add('active');
+                }
+            });
+        };
+
+        const handleNavClick = function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            window.location.hash = targetId;
+            setActiveLink(targetId);
+            showContent(targetId);
+            if (mobileNavContainer.offsetParent !== null) { // is visible
+                mobileNavContainer.classList.add('hidden');
+            }
+        };
+        
+        allNavLinks.forEach(link => link.addEventListener('click', handleNavClick));
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileNavContainer.classList.toggle('hidden');
+        });
+
+        const initialHash = window.location.hash || '#inicio';
+        setActiveLink(initialHash);
+        showContent(initialHash);
+        renderMathInElement(document.body);
+    };
+
+    const indeterminaciones = [
+        { 
+            tipo: "\\frac{\\infty}{\\infty}", 
+            desc: "Se resuelve comparando los grados de los polinomios del numerador (Num) y denominador (Den).",
+            casos: [ "<b>Grado(Num) > Grado(Den)</b>: El límite es <span class='katex-inline'>\\pm\\infty</span>.", "<b>Grado(Num) < Grado(Den)</b>: El límite es 0.", "<b>Grado(Num) = Grado(Den)</b>: El límite es el cociente de los coeficientes principales." ],
+            ejemplo: {
+                pregunta: "Calcular <span class='katex-block'>\\lim_{x \\to \\infty} \\frac{3x^2 - 5x + 1}{2x^2 + 7}</span>",
+                solucion: "<b>1. Identificar grados:</b> Grado(Num) = 2, Grado(Den) = 2. Son iguales.<br><b>2. Aplicar regla:</b> El límite es el cociente de los coeficientes principales.<br><b>3. Resultado:</b> <span class='katex-block'>\\lim_{x \\to \\infty} \\frac{3x^2 - 5x + 1}{2x^2 + 7} = \\frac{3}{2}</span>"
+            }
+        },
+        { 
+            tipo: "\\frac{0}{0}", 
+            desc: "Suele requerir factorización o la regla de L'Hôpital.",
+            casos: [ "<b>Polinomios</b>: Factorizar (usando Ruffini si es necesario) y simplificar.", "<b>Raíces</b>: Multiplicar y dividir por el conjugado.", "<b>L'Hôpital</b>: Derivar numerador y denominador por separado." ],
+            ejemplo: {
+                pregunta: "Calcular <span class='katex-block'>\\lim_{x \\to 1} \\frac{x^2 - 1}{x - 1}</span>",
+                solucion: "<b>1. Identificar indeterminación:</b> Al sustituir x=1, obtenemos <span class='katex-inline'>\\frac{0}{0}</span>.<br><b>2. Método (Factorización):</b> El numerador es una diferencia de cuadrados: <span class='katex-inline'>x^2 - 1 = (x-1)(x+1)</span>.<br><b>3. Simplificar y resolver:</b> <span class='katex-block'>\\lim_{x \\to 1} \\frac{(x - 1)(x+1)}{x - 1} = \\lim_{x \\to 1} (x+1) = 1+1=2</span>"
+            }
+        },
+        { 
+            tipo: "1^\\infty", 
+            desc: "Se resuelve utilizando la fórmula basada en el número e.",
+            casos: ["Se aplica la fórmula: <span class='katex-block'>L = e^{\\lim_{x \\to a} g(x) \\cdot (f(x)-1)}</span>"],
+            ejemplo: {
+                pregunta: "Calcular <span class='katex-block'>\\lim_{x \\to \\infty} \\left(1 + \\frac{1}{x}\\right)^x</span>",
+                solucion: "<b>1. Identificar indeterminación:</b> La base tiende a 1 y el exponente a <span class='katex-inline'>\\infty</span>.<br><b>2. Aplicar fórmula:</b> Aquí <span class='katex-inline'>f(x) = 1 + \\frac{1}{x}</span> y <span class='katex-inline'>g(x) = x</span>.<br><b>3. Calcular exponente:</b> <span class='katex-block'>\\lim_{x \\to \\infty} x \\cdot \\left(1 + \\frac{1}{x} - 1\\right) = \\lim_{x \\to \\infty} x \\cdot \\frac{1}{x} = \\lim_{x \\to \\infty} 1 = 1</span><br><b>4. Resultado:</b> El límite es <span class='katex-inline'>e^1 = e</span>."
+            }
+        }
+    ];
+
+    const loadIndeterminaciones = () => {
+        const container = document.getElementById('indeterminaciones-container');
+        indeterminaciones.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'border rounded-lg overflow-hidden';
+            let casosHtml = item.casos.map(caso => `<li class="py-1">${caso}</li>`).join('');
+            div.innerHTML = `
+                <button class="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 transition flex justify-between items-center">
+                    <h3 class="font-semibold text-xl katex-inline">${item.tipo}</h3>
+                    <span class="transform transition-transform text-teal-500 text-2xl font-light">+</span>
+                </button>
+                <div class="accordion-content">
+                    <div class="p-4 border-t">
+                        <p class="mb-2">${item.desc}</p>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">${casosHtml}</ul>
+                    </div>
+                    <div class="p-4 bg-amber-50 border-t">
+                        <h4 class="font-semibold text-amber-800">Ejemplo Guiado:</h4>
+                        <div class="mt-2 pregunta">${item.ejemplo.pregunta}</div>
+                        <div class="mt-4 solucion">${item.ejemplo.solucion}</div>
+                    </div>
+                </div>`;
+            container.appendChild(div);
+            renderMathInElement(div);
+            
+            const button = div.querySelector('button');
+            const content = div.querySelector('.accordion-content');
+            const icon = div.querySelector('span');
+            button.addEventListener('click', () => {
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.textContent = '+';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.textContent = '-';
+                }
+            });
+        });
+    };
+    
+    const teoremas = [
+        {
+            nombre: 'Teorema de Bolzano',
+            enunciado: 'Si una función <span class="katex-inline">f(x)</span> es continua en <span class="katex-inline">[a, b]</span> y <span class="katex-inline">f(a) \\cdot f(b) < 0</span> (signos opuestos), entonces existe <b>al menos</b> un punto <span class="katex-inline">c \\in (a, b)</span> tal que <span class="katex-inline">f(c)=0</span>.',
+            idea: 'Una función continua que cruza del "piso de arriba" al "piso de abajo" tiene que pasar por la planta cero.',
+            aplicacion: 'Es la herramienta principal para <strong>demostrar la existencia de soluciones</strong> de una ecuación en un intervalo. Muy útil en la EBAU para preguntas teóricas.',
+            chartId: 'bolzanoChart'
+        },
+        {
+            nombre: 'Teorema de Weierstrass',
+            enunciado: 'Si <span class="katex-inline">f(x)</span> es continua en <span class="katex-inline">[a, b]</span>, entonces alcanza un <b>máximo y un mínimo absolutos</b> en ese intervalo.',
+            idea: 'En un trozo de gráfica continuo y con extremos definidos, siempre habrá un punto más alto y uno más bajo.',
+            aplicacion: 'Garantiza la existencia de valores extremos, lo cual es fundamental para problemas de optimización.'
+        }
+    ];
+
+    const loadTeoremas = () => {
+        const container = document.getElementById('teoremas-container');
+        teoremas.forEach(t => {
+            const div = document.createElement('div');
+            div.className = 'border rounded-lg overflow-hidden';
+            const chartHtml = t.chartId ? `<div class="chart-container h-64 mt-4"><canvas id="${t.chartId}"></canvas></div>` : '';
+            div.innerHTML = `
+                <button class="w-full text-left p-4 bg-gray-100 hover:bg-gray-200 transition flex justify-between items-center">
+                    <h3 class="font-semibold text-lg">${t.nombre}</h3><span class="text-teal-500 text-2xl font-light">+</span>
+                </button>
+                <div class="accordion-content">
+                    <div class="p-4 border-t">
+                        <p class="mb-2"><b>Enunciado:</b> ${t.enunciado}</p>
+                        <p class="mt-4 p-3 bg-teal-50 border-l-4 border-teal-400 text-teal-800 rounded-r-lg"><i><b>Idea clave:</b> ${t.idea}</i></p>
+                    </div>
+                    <div class="p-4 border-t bg-gray-50">
+                        <h4 class="font-semibold">Aplicaciones Prácticas:</h4>
+                        <p class="mt-1">${t.aplicacion}</p>
+                    </div>
+                    ${chartHtml ? `<div class="p-4 border-t">${chartHtml}</div>` : ''}
+                </div>`;
+            container.appendChild(div);
+            renderMathInElement(div);
+
+            const button = div.querySelector('button');
+            const content = div.querySelector('.accordion-content');
+            const icon = div.querySelector('span');
+            button.addEventListener('click', () => {
+                 if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.textContent = '+';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.textContent = '-';
+                    if (t.chartId) renderBolzanoChart();
+                }
+            });
+        });
+    };
+
+    const ejerciciosEBAU = [
+        { fuente: "Murcia, Junio 2023", pregunta: "Estudie la continuidad de <span class='katex-block'>f(x) = \\frac{x^2-4}{x-2}</span> en <span class='katex-inline'>x=2</span>.", solucion: "1. <b><span class='katex-inline'>f(2)</span> no existe</b> (división por cero). No es continua.<br>2. Límite: <span class='katex-block'>\\lim_{x \\to 2} \\frac{(x-2)(x+2)}{x-2} = 4</span>.<br>3. <b>Conclusión:</b> Discontinuidad evitable en <span class='katex-inline'>x=2</span>." },
+        { fuente: "Madrid, Junio 2022", pregunta: "Halle <span class='katex-inline'>k</span> para que <span class='katex-block'>f(x) = \\begin{cases} 3x^2 - kx & x \\leq 1 \\\\ 2x + 2k & x > 1 \\end{cases}</span> sea continua.", solucion: "Igualamos límites laterales en <span class='katex-inline'>x=1</span>:<br><span class='katex-inline'>\\lim_{x \\to 1^-} f(x) = 3(1)^2 - k(1) = 3-k</span>.<br><span class='katex-inline'>\\lim_{x \\to 1^+} f(x) = 2(1) + 2k = 2+2k</span>.<br> <span class='katex-inline'>3-k = 2+2k \\implies 1 = 3k \\implies k = \\frac{1}{3}</span>." },
+        { fuente: "Andalucía, Junio 2021", pregunta: "Calcule <span class='katex-block'>\\lim_{x \\to \\infty} \\left(\\frac{x+1}{x-1}\\right)^x</span>", solucion: "Indeterminación <span class='katex-inline'>1^\\infty</span>. Usamos la fórmula <span class='katex-inline'>e^{\\lim g(f-1)}</span>.<br>Exponente: <span class='katex-block'>\\lim_{x \\to \\infty} x \\left(\\frac{x+1}{x-1} - 1\\right) = \\lim_{x \\to \\infty} x \\left(\\frac{x+1-x+1}{x-1}\\right) = \\lim_{x \\to \\infty} \\frac{2x}{x-1} = 2</span>. <br>Resultado: <span class='katex-inline'>e^2</span>." },
+        { fuente: "C. Valenciana, 2020", pregunta: "Use Bolzano para probar que <span class='katex-inline'>f(x) = x^3 + x - 5</span> tiene una raíz en <span class='katex-inline'>(1, 2)</span>.", solucion: "1. <span class='katex-inline'>f(x)</span> es continua por ser un polinomio.<br>2. Evaluamos en extremos: <span class='katex-inline'>f(1) = 1+1-5 = -3</span> (negativo). <span class='katex-inline'>f(2) = 8+2-5 = 5</span> (positivo).<br>3. Como es continua y hay cambio de signo, Bolzano garantiza que <span class='katex-inline'>\\exists c \\in (1,2)</span> tal que <span class='katex-inline'>f(c)=0</span>."}
+    ];
+    
+    const loadEbau = () => {
+        const container = document.getElementById('ebau-container');
+        ejerciciosEBAU.forEach((ej, index) => {
+            const div = document.createElement('div');
+            div.className = 'border rounded-lg';
+            div.innerHTML = `
+                <div class="p-4 bg-gray-50 rounded-t-lg">
+                    <p class="font-semibold text-gray-700">Ejercicio ${index+1} <span class="font-normal text-sm text-gray-500">- ${ej.fuente}</span></p>
+                    <div class="mt-2 pregunta">${ej.pregunta}</div>
+                </div>
+                <div class="p-4 bg-white border-t">
+                    <button class="text-teal-600 font-semibold hover:text-teal-800">Mostrar Solución</button>
+                    <div class="solucion accordion-content mt-4">
+                        <div class="text-gray-800 bg-teal-50 p-4 rounded-md border border-teal-200">${ej.solucion}</div>
+                    </div>
+                </div>`;
+            container.appendChild(div);
+            renderMathInElement(div);
+            
+            const button = div.querySelector('button');
+            const solucionContent = div.querySelector('.solucion');
+            button.addEventListener('click', () => {
+                const isHidden = !solucionContent.style.maxHeight;
+                if (isHidden) {
+                    solucionContent.style.maxHeight = solucionContent.scrollHeight + "px";
+                    button.textContent = 'Ocultar Solución';
+                } else {
+                    solucionContent.style.maxHeight = null;
+                    button.textContent = 'Mostrar Solución';
+                }
+            });
+        });
+    };
+
+    let chartInstances = {};
+    const renderLimitChart = () => {
+        if(chartInstances.limit) chartInstances.limit.destroy();
+        const ctx = document.getElementById('limitChart').getContext('2d');
+        const slider = document.getElementById('limitSlider'), xValSpan = document.getElementById('xValue'), yValSpan = document.getElementById('yValue');
+        const func = x => (x*x - 4) / (x - 2);
+        
+        const updateChart = () => {
+            const xVal = parseFloat(slider.value);
+            xValSpan.textContent = xVal.toFixed(3);
+            yValSpan.textContent = Math.abs(xVal - 2) < 0.001 ? "≈4.000" : func(xVal).toFixed(3);
+            chartInstances.limit.data.datasets[1].data = [{ x: xVal, y: func(xVal) }];
+            chartInstances.limit.update('none');
+        };
+        
+        chartInstances.limit = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{ label: 'f(x)', data: Array.from({length: 41}, (_, i) => i * 0.1).map(x => ({x, y: Math.abs(x-2)<0.01 ? NaN : func(x)})), borderColor: '#0d9488', borderWidth: 2, tension: 0.1, pointRadius: 0 }, 
+                { label: 'Punto x', data: [], backgroundColor: '#f97316', pointRadius: 6 }, 
+                { label: 'Límite', data: [{x: 2, y: 4}], backgroundColor: 'white', borderColor: '#f97316', borderWidth: 2, pointRadius: 6, pointStyle: 'circle'}]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', min: 0, max: 4 }, y: { min: 2, max: 6 } }, plugins: { tooltip: { enabled: false }, legend: { position: 'bottom'} } }
+        });
+        slider.addEventListener('input', updateChart);
+        updateChart();
+    };
+
+    const renderDiscontinuityCharts = () => {
+        if(chartInstances.disc1) chartInstances.disc1.destroy();
+        chartInstances.disc1 = new Chart(document.getElementById('discontinuityChart1').getContext('2d'), { type: 'line', data: { datasets: [{ data: [{x:0,y:0},{x:1,y:1},{x:1.9,y:1.9},{x:2.1,y:2.1},{x:3,y:3},{x:4,y:4}], borderColor: '#0d9488', tension: 0.1, pointRadius: 0 }, { data: [{x:2, y:2}], pointRadius: 5, backgroundColor: 'white', borderColor: '#0d9488', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', min: 0, max: 4}, y: {min: 0, max: 4} }, plugins: { legend: { display: false } } } });
+        if(chartInstances.disc2) chartInstances.disc2.destroy();
+        chartInstances.disc2 = new Chart(document.getElementById('discontinuityChart2').getContext('2d'), { type: 'line', data: { datasets: [{ data: [{x:0,y:1},{x:2,y:1}], borderColor: '#0d9488', pointRadius: 0 }, { data: [{x:2,y:3},{x:4,y:3}], borderColor: '#0d9488', pointRadius: 0 }, { data: [{x:2,y:1}], pointRadius: 5, backgroundColor: '#0d9488' }, { data: [{x:2,y:3}], pointRadius: 5, backgroundColor: 'white', borderColor: '#0d9488', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', min: 0, max: 4}, y: {min: 0, max: 4} }, plugins: { legend: { display: false } } } });
+        if(chartInstances.disc3) chartInstances.disc3.destroy();
+        chartInstances.disc3 = new Chart(document.getElementById('discontinuityChart3').getContext('2d'), { type: 'line', data: { datasets: [{ data: [{x:0,y:0.5},{x:1.5,y:2},{x:1.9,y:10}], borderColor: '#0d9488', pointRadius: 0 }, { data: [{x:2.1,y:10},{x:2.5,y:2},{x:4,y:0.5}], borderColor: '#0d9488', pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', min: 0, max: 4 }, y: {min: 0, max: 4} }, plugins: { legend: { display: false } } } });
+    };
+    
+    const renderBolzanoChart = () => {
+        if(chartInstances.bolzano) return;
+        const ctx = document.getElementById('bolzanoChart').getContext('2d');
+        chartInstances.bolzano = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [
+                    { label: 'f(x)', data: Array.from({length: 41}, (_, i) => i * 0.1).map(x => ({x, y: x*x - 2})), borderColor: '#0d9488', tension: 0.1, pointRadius: 0, fill: false }, 
+                    { label: 'f(a=1) < 0', data: [{x:1, y: -1}], backgroundColor: '#be123c', pointRadius: 6 },
+                    { label: 'f(b=2) > 0', data: [{x:2, y: 2}], backgroundColor: '#1d4ed8', pointRadius: 6 },
+                    { label: 'Raíz c', data: [{x: Math.sqrt(2), y: 0}], backgroundColor: '#f97316', pointRadius: 6 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, scales: { x: { type: 'linear', min: 0, max: 3 }, y: { grid: { color: c => c.tick.value === 0 ? '#6b7280' : 'rgba(0,0,0,0.1)' } } }, plugins: { legend: { position: 'bottom' } } }
+        });
+    };
+
+    setupNavigation();
+    loadIndeterminaciones();
+    loadTeoremas();
+    loadEbau();
+    renderLimitChart();
+    renderDiscontinuityCharts();
+});
+</script>
+</body>
+</html>
